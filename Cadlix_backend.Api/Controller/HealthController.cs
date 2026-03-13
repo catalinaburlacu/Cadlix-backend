@@ -7,5 +7,10 @@ namespace Cadlix_backend.Api.Controller
     [ApiController]
     public class HealthController : ControllerBase
     {
+        [HttpPost]
+         public IActionResult GetAllUsers()
+         {
+             return Ok("OK");
+         }
     }
 }

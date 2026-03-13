@@ -7,11 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cadlix_backend.Helpers\Cadlix_backend.Helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\User\" />
   </ItemGroup>
 
 </Project>

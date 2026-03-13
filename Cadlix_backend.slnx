@@ -1,6 +1,6 @@
 <Solution>
   <Project Path="Cadlix_backend.Api/Cadlix_backend.Api.csproj" />
   <Project Path="Cadlix_backend.BusinessLogic/Cadlix_backend.BusinessLogic.csproj" />
+  <Project Path="Cadlix_backend.DataAccess/Cadlix_backend.DataAccess.csproj" />
   <Project Path="Cadlix_backend.Domain/Cadlix_backend.Domain.csproj" />
-  <Project Path="Cadlix_backend.Helpers/Cadlix_backend.Helpers.csproj" />
 </Solution>
