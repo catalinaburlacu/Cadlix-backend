@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cadlix_backend.Api.Controller
 {
-    [Route("api/[controller]")]
+    [Route("api/health")]
     [ApiController]
     public class HealthController : ControllerBase
     {
-        [HttpPost]
-        public IActionResult GetAllUsers()
+        [HttpGet]
+        public IActionResult Get()
         {
-            return Ok("OK");
+            return Ok("API is healthy");
         }
     }
 }

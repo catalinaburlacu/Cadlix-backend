@@ -20,4 +20,7 @@
     <ProjectReference Include="..\Cadlix_backend.Domain\Cadlix_backend.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controller/" />
+  </ItemGroup>
 </Project>

@@ -1,0 +1,8 @@
+**/obj/
+**/bin/
+.idea/
+.git/
+
+Dockerfile
+Makefile
+compose.*
