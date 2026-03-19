@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Cadlix_backend.Domain.Enums;
 
-
-namespace Cadlix_backend.DataAccess.Entities;
+namespace Cadlix_backend.Domain.Entities;
 
 public class Users
 {
@@ -33,4 +31,11 @@ public class Users
     public string? LasIp { get; set; }
     
     public URole Level { get; set; }
+}
+
+
+public enum URole
+{
+    User = 0,
+    Admin = 1
 }

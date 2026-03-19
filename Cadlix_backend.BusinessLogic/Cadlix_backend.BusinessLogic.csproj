@@ -7,14 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../Cadlix_backend.DataAccess/Cadlix_backend.DataAccess.csproj" />
     <ProjectReference Include="..\Cadlix_backend.Domain\Cadlix_backend.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DBModel\Seed\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <Folder Include="Core/" />
+    <Folder Include="Interfaces/" />
+    <Folder Include="Structure/" />
   </ItemGroup>
 
 </Project>
