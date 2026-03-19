@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Cadlix_backend.Domain.Entities;
+namespace Cadlix_backend.Domain.Entities.User;
 
-public class Users
+public class UsersData
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -34,8 +34,3 @@ public class Users
 }
 
 
-public enum URole
-{
-    User = 0,
-    Admin = 1
-}
