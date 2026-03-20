@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Entities/Categories/" />
+    <Folder Include="Entities/Leaderboard/" />
+    <Folder Include="Entities/Movie/" />
     <Folder Include="Models/" />
   </ItemGroup>
 
