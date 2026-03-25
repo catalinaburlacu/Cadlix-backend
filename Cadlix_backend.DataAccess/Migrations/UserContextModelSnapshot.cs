@@ -22,7 +22,7 @@ namespace Cadlix_backend.DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Cadlix_backend.Domain.Entities.Users", b =>
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.User.UsersData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

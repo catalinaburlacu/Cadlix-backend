@@ -1,0 +1,13 @@
+-- create_user.sql
+IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = '$(DB_USERNAME)')
+BEGIN
+    CREATE LOGIN [$(DB_USERNAME)] WITH PASSWORD = '$(DB_PASSWORD)';
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = '$(DB_USERNAME)')
+BEGIN
+    CREATE USER [$(DB_USERNAME)] FOR LOGIN [$(DB_USERNAME)];
+    ALTER SERVER ROLE [sysadmin] ADD MEMBER [$(DB_USERNAME)];
+END
+GO

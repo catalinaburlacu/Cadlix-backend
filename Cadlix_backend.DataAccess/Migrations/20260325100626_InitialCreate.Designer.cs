@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cadlix_backend.DataAccess.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20260319101737_InitialCreate")]
+    [Migration("20260325100626_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Cadlix_backend.DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Cadlix_backend.Domain.Entities.Users", b =>
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.User.UsersData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

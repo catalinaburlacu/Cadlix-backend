@@ -1,33 +1,42 @@
 services:
-  mssql:
+  mssql-server:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: mssql-server
-    environment:
-      ACCEPT_EULA: 'Y'
-      MSSQL_SA_PASSWORD: "${DB_PASSWORD}"
-      MSSQL_PID: Developer
-
+    container_name: sqlserver_db
     ports:
       - "1433:1433"
-    volumes:
-      - mssql-data:/var/opt/mssql
-    restart: unless-stopped
-  
-  backend:
-    build:
-      context: .
-    
-    image: backend:1.0
-    
-    container_name: dotnet-web
     environment:
-      ConnectionStrings__DefaultConnection: "Server=mssql-server;Database=Cadlix;User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True;"
-    
-    ports:
-      - "8080:8080"
-    
-    depends_on:
-      - mssql
+      CHECK_POLICY: OFF
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: ${DB_SA_PASSWORD}
+      
 
-volumes:
-  mssql-data:
+  mssql-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_init
+    depends_on:
+      - mssql-server
+    volumes:
+      - ./sql-init-scripts:/usr/src/app/sql-init-scripts
+    environment:
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+    command:
+      /opt/mssql-tools18/bin/sqlcmd -S mssql-server -U SA -P ${DB_SA_PASSWORD} -C -i /usr/src/app/sql-init-scripts/init.sql
+
+  # backend:
+  #   build:
+  #     context: .
+    
+  #   image: backend:1.0
+    
+  #   container_name: dotnet-web
+  #   environment:
+  #     ConnectionStrings__DefaultConnection: "Server=mssql-server;Database=Cadlix;User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True;"
+    
+  #   ports:
+  #     - "8080:8080"
+    
+  #   depends_on:
+  #     - mssql-server
+
