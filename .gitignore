@@ -6,7 +6,7 @@
 # dotenv files
 .env
 
-Cadlix_backend.Api/appsettings.json
+/appsettings*.json
 
 # User-specific files
 *.rsuser
