@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cadlix_backend.Domain.Entities.User;
 
-public class UsersData
+public class UserData
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -11,7 +11,7 @@ public class UsersData
 
     [Required]
     [Display(Name = "Username")]
-    [StringLength(30, MinimumLength = 5 ,ErrorMessage ="Username cannot be longer than 30 characters.")]
+    [StringLength(30, MinimumLength = 5, ErrorMessage = "Username cannot be longer than 30 characters.")]
     public string? Name { get; set; }
 
     [Required]
@@ -24,13 +24,12 @@ public class UsersData
     [StringLength(30)]
     public string? Email { get; set; }
 
-    [DataType(DataType.Password)]
-    public DateTime LastLogin { get; set; }
-
-    [StringLength(30)]
-    public string? LasIp { get; set; }
-    
     public URole Level { get; set; }
+
+    public int HistoryId { get; set; }
+
+    public int MovieListId { get; set; }
+
 }
 
 

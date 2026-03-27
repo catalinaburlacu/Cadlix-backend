@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,12 +11,10 @@ public class ListsData
 
     [Required]
     [Display(Name = "User ID")]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int UserId { get; set; }
 
     [Required]
     [Display(Name = "Film ID")]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int FilmId { get; set; }
 
     [Required]
