@@ -1,6 +1,6 @@
 -include .env
 
-export ConnectionStrings__DefaultConnection := Server=localhost;Database=Cadlix;User Id=$(DB_USER);Password=$(DB_PASSWORD);TrustServerCertificate=True;
+# export ConnectionStrings__DefaultConnection := Server=localhost;Database=Cadlix;User Id=$(DB_USER);Password=$(DB_PASSWORD);TrustServerCertificate=True;
 
 start:
 	@ docker compose up -d --build
@@ -12,7 +12,7 @@ run:
 	@ dotnet run --project ./Cadlix_backend.Api/
 
 migration-delete:
-	echo %ConnectionStrings__DefaultConnection%
+# 	echo %ConnectionStrings__DefaultConnection%
 	@ dotnet ef migrations remove --project Cadlix_backend.DataAccess --startup-project Cadlix_backend.Api
 
 migration: migration-delete
