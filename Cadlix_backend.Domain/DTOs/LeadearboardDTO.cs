@@ -1,15 +1,13 @@
-using System;
-
 namespace Cadlix_backend.Domain.DTOs;
 
-public class LeadearboardDTO
+public class LeaderboardEntryDto
 {
     public int Rank { get; set; }
-    public int RankChange { get; set; }    
+    public int RankChange { get; set; }
     public int UserId { get; set; }
-    public string Username { get; set; }
-    public string AvatarUrl { get; set; }
-    public string Country { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string AvatarUrl { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
 
     public double WatchTimeHours { get; set; }
     public int MoviesWatched { get; set; }
