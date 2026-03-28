@@ -1,8 +1,6 @@
-using System;
-
 namespace Cadlix_backend.BusinessLogic.Interfaces;
 
-public class IUserAction
+public interface ISession
 {
 
 }
