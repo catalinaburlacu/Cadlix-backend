@@ -16,8 +16,4 @@
     <Folder Include="Structure/" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="16.1.1" />
-  </ItemGroup>
-
 </Project>

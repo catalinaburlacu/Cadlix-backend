@@ -13,6 +13,10 @@ public class SubscriptionData
     public int Id { get; set; }
 
     [Required]
+    [Display(Name = "User ID")]
+    public int UserId { get; set; }
+
+    [Required]
     [Display(Name = "Subscription Name")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Subscription name must be between 3 and 50 characters long.")]
     public string? Name { get; set; }
@@ -34,4 +38,8 @@ public class SubscriptionData
     [Required]
     [Display(Name = "Created At")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [Required]
+    [Display(Name = "Is Canceled")]
+    public bool IsCanceled { get; set; }
 }
