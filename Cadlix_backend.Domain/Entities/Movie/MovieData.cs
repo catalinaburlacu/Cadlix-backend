@@ -37,4 +37,9 @@ public class MovieData
     [Display(Name = "Description")]
     [StringLength(1000, MinimumLength = 1, ErrorMessage = "Description cannot be longer than 1000 characters.")]
     public string? Description { get; set; }
+
+    [Required]
+    [Display(Name = "Link")]
+    [StringLength(200, MinimumLength = 1, ErrorMessage = "Link cannot be longer than 200 characters.")]
+    public string? Link { get; set; }
 }
