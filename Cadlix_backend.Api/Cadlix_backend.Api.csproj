@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cadlix_backend.BusinessLogic\Cadlix_backend.BusinessLogic.csproj" />
+    <ProjectReference Include="..\Cadlix_backend.BusinessLayer\Cadlix_backend.BusinessLayer.csproj" />
     <ProjectReference Include="..\Cadlix_backend.DataAccess\Cadlix_backend.DataAccess.csproj" />
     <ProjectReference Include="..\Cadlix_backend.Domain\Cadlix_backend.Domain.csproj" />
   </ItemGroup>

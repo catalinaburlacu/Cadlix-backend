@@ -1,11 +1,13 @@
 using Cadlix_backend.DataAccess.Repositories.Interfaces;
 using Cadlix_backend.Domain.DTOs;
-using Cadlix_backend.BusinessLogic.Exceptions;
+using Cadlix_backend.BusinessLayer.Exceptions;
 using User = Cadlix_backend.Domain.Entities.User.UserData;
+using Cadlix_backend.DataAccess.Repositories;
+using Cadlix_backend.DataAccess.Context;
 
-namespace Cadlix_backend.BusinessLogic.Services;
+namespace Cadlix_backend.BusinessLayer.Services;
 
-public class LeaderboardService
+public class LeaderboardActions
 {
     private readonly IUserRepository _userRepo;
     private readonly IWatchHistoryRepository _watchRepo;
@@ -16,14 +18,11 @@ public class LeaderboardService
     private const double PtsPerReview = 2.0;
     private const double PtsPerLike = 0.5;
 
-    public LeaderboardService(
-        IUserRepository userRepo,
-        IWatchHistoryRepository watchRepo,
-        IReviewRepository reviewRepo)
+    public LeaderboardActions()
     {
-        _userRepo = userRepo;
-        _watchRepo = watchRepo;
-        _reviewRepo = reviewRepo;
+        _userRepo = new UserRepository(new AppDbContext());
+        _watchRepo = new WatchHistoryRepository(new AppDbContext());
+        _reviewRepo = new ReviewRepository(new AppDbContext());
     }
 
     public async Task<IEnumerable<LeaderboardEntryDto>> GetTopUsersAsync(int count = 100)
@@ -50,7 +49,7 @@ public class LeaderboardService
         return ranked;
     }
 
-    public async Task<LeaderboardEntryDto> GetUserRankAsync(int userId)
+    public async Task<LeaderboardEntryDto?> GetUserRankAsync(int userId)
     {
         var all = await GetTopUsersAsync(int.MaxValue);
         return all.FirstOrDefault(e => e.UserId == userId)

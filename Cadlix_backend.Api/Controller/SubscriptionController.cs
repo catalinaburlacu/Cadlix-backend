@@ -1,66 +1,88 @@
 using System.Security.Claims;
-using Cadlix_backend.BusinessLogic.Services;
+using Cadlix_backend.BusinessLayer.Interfaces;
+using Cadlix_backend.BusinessLayer;
 using Cadlix_backend.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cadlix_backend.Api.Controller
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/{userId}")]
     [ApiController]
     public class SubscriptionController : ControllerBase
     {
-        private readonly SubscriptionService _subscriptionService;
+        private readonly ISubscriptionAction _subscriptionService;
 
-        public SubscriptionController(SubscriptionService subscriptionService)
+        public SubscriptionController()
         {
-            _subscriptionService = subscriptionService;
+            _subscriptionService = new BusinessLogic().Subscription();
         }
 
         [HttpGet("active")]
-        [Authorize]
-        public async Task<IActionResult> GetActive()
+        // [Authorize]
+        public IActionResult GetActive(int userId)
         {
-            if (!TryGetUserId(out var userId))
+            // if (!TryGetUserId(out var userId))
+            // {
+            //     return Unauthorized("User id claim is missing or invalid.");
+            // }
+            SubscriptionDTO result;
+            try
             {
-                return Unauthorized("User id claim is missing or invalid.");
+                result = _subscriptionService.GetActiveSubscription(userId);
             }
-
-            var sub = await _subscriptionService.GetActiveSubscriptionAsync(userId);
-            return Ok(sub);
+            catch
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         [HttpPost("create")]
-        [Authorize]
-        public async Task<IActionResult> Create([FromBody] CreateSubscriptionDTO dto)
+        // [Authorize]
+        public IActionResult Create(int userId, [FromBody] CreateSubscriptionDTO dto)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                return Unauthorized("User id claim is missing or invalid.");
-            }
+            // if (!TryGetUserId(out var userId))
+            // {
+            //     return Unauthorized("User id claim is missing or invalid.");
+            // }
 
-            dto.UserId = userId;
-            var result = await _subscriptionService.CreateSubscriptionAsync(dto);
+            SubscriptionDTO result;
+            try
+            {
+                dto.UserId = userId;
+                result = _subscriptionService.CreateSubscription(dto);
+            }
+            catch
+            {
+                return NotFound();
+            }
             return Ok(result);
         }
 
         [HttpPost("cancel")]
-        [Authorize]
-        public async Task<IActionResult> Cancel()
+        // [Authorize]
+        public IActionResult Cancel(int userId)
         {
-            if (!TryGetUserId(out var userId))
+            // if (!TryGetUserId(out var userId))
+            // {
+            //     return Unauthorized("User id claim is missing or invalid.");
+            // }
+            try
             {
-                return Unauthorized("User id claim is missing or invalid.");
+                _subscriptionService.CancelSubscription(userId);
             }
-
-            await _subscriptionService.CancelSubscriptionAsync(userId);
+            catch
+            {
+                return NotFound();
+            }
             return Ok("Subscription was cancelled successfully.");
         }
 
-        private bool TryGetUserId(out int userId)
-        {
-            var value = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return int.TryParse(value, out userId);
-        }
+        // private bool TryGetUserId(out int userId)
+        // {
+        //     userId = 1;
+        //     return true;
+        // }
     }
 }

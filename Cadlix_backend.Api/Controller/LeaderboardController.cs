@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Cadlix_backend.BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
-using Cadlix_backend.DataAccess.Repositories.Interfaces;
 using System.Security.Claims;
+using Cadlix_backend.BusinessLayer.Interfaces;
+using Cadlix_backend.BusinessLayer;
 
 namespace Cadlix_backend.Api.Controller
 {
@@ -11,26 +11,29 @@ namespace Cadlix_backend.Api.Controller
     [ApiController]
     public class LeaderboardController : ControllerBase
     {
-            private readonly ILeaderboardRepository _leaderboardService;
+        private readonly ILeaderboardAction _leaderboardService;
 
-    public LeaderboardController(ILeaderboardRepository leaderboardService)
-        => _leaderboardService = leaderboardService;
+        public LeaderboardController()
+            => _leaderboardService = new BusinessLogic().Leaderboard();
 
-    [HttpGet]
-    public async Task<IActionResult> GetTop([FromQuery] int count = 100)
-    {
-        var result = await _leaderboardService.GetTopUsersAsync(count);
-        return Ok(result);
-    }
+        [HttpGet]
+        public IActionResult GetTop([FromQuery] int count = 100)
+        {
+            var result = _leaderboardService.GetTopUsers(count);
+            return Ok(result);
+        }
 
-    [HttpGet("me")]
-    [Authorize]
-    public async Task<IActionResult> GetMyRank()
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var result = await _leaderboardService.GetUserRankAsync(userId);
-        return Ok(result);
-    }
+        [HttpGet("{userId}")]
+        // [Authorize]
+        public IActionResult GetMyRank(int userId)
+        {
+            var result = _leaderboardService.GetUserRank(userId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
 
     }
 }

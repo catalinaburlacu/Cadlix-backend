@@ -1,16 +1,18 @@
+using Cadlix_backend.DataAccess.Context;
+using Cadlix_backend.DataAccess.Repositories;
 using Cadlix_backend.DataAccess.Repositories.Interfaces;
 using Cadlix_backend.Domain.DTOs;
 using Cadlix_backend.Domain.Enum;
 
-namespace Cadlix_backend.BusinessLogic.Services;
+namespace Cadlix_backend.BusinessLayer.Services;
 
-public class SubscriptionService
+public class SubscriptionActions
 {
     private readonly ISubscriptionRepository _repo;
 
-    public SubscriptionService(ISubscriptionRepository repo)
+    public SubscriptionActions()
     {
-        _repo = repo;
+        _repo = new SubscriptionRepository( new AppDbContext());
     }
 
     public async Task<SubscriptionDTO> GetActiveSubscriptionAsync(int userId)
