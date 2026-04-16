@@ -7,53 +7,52 @@ namespace Cadlix_backend.DataAccess.Repositories;
 
 public class MovieRepository : IMovieRepository
 {
-    private readonly AppDbContext _context;
-
-    public MovieRepository(AppDbContext context)
+    public List<MovieData> GetAll()
     {
-        _context = context;
+        using var db = new AppDbContext();
+        return db.Movies.ToList();
     }
 
-    public async Task<List<MovieData>> GetAllAsync()
+    public MovieData? GetById(int id)
     {
-        return await _context.Movies.ToListAsync();
+        using var db = new AppDbContext();
+        return db.Movies.FirstOrDefault(entity => entity.Id == id);
     }
 
-    public async Task<MovieData?> GetByIdAsync(int id)
+    public MovieData Add(MovieData entity)
     {
-        return await _context.Movies.FirstOrDefaultAsync(entity => entity.Id == id);
-    }
-
-    public async Task<MovieData> AddAsync(MovieData entity)
-    {
-        await _context.Movies.AddAsync(entity);
-        await _context.SaveChangesAsync();
+        using var db = new AppDbContext();
+        db.Movies.Add(entity);
+        db.SaveChanges();
         return entity;
     }
 
-    public async Task<MovieData?> UpdateAsync(MovieData entity)
+    public MovieData? Update(MovieData entity)
     {
-        var existing = await GetByIdAsync(entity.Id);
+        using var db = new AppDbContext();
+        var existing = GetById(entity.Id);
         if (existing is null)
         {
             return null;
         }
 
-        _context.Entry(existing).CurrentValues.SetValues(entity);
-        await _context.SaveChangesAsync();
+        db.Entry(existing).CurrentValues.SetValues(entity);
+        db.SaveChanges();
         return existing;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public bool Delete(int id)
     {
-        var existing = await GetByIdAsync(id);
+        using var db = new AppDbContext();
+        var existing = GetById(id);
         if (existing is null)
         {
             return false;
         }
 
-        _context.Movies.Remove(existing);
-        await _context.SaveChangesAsync();
+
+        db.Movies.Remove(existing);
+        db.SaveChanges();
         return true;
     }
 }

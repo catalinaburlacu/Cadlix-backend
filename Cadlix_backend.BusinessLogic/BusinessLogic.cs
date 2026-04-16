@@ -1,11 +1,12 @@
-using System;
+using Cadlix_backend.BusinessLayer.Interfaces;
+using Cadlix_backend.BusinessLayer.Structure;
 
-namespace Cadlix_backend.BusinessLogic;
+namespace Cadlix_backend.BusinessLayer;
 
 public class BusinessLogic
 {
-    public SessionBL GetSessionBL()
+    public IMovieAction MovieAction()
     {
-        return new SessionBL();
+        return new MovieActionExecution();
     }
 }
