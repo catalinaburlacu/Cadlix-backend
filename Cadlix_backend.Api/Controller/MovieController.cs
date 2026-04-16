@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Cadlix_backend.BusinessLogic.Services;
 using Cadlix_backend.Domain.DTOs.Movie;
+using Cadlix_backend.BusinessLayer.Interfaces;
+using Cadlix_backend.BusinessLayer;
 
 namespace Cadlix_backend.Api.Controller
 {
@@ -9,24 +10,24 @@ namespace Cadlix_backend.Api.Controller
     [ApiController]
     public class MovieController : ControllerBase
     {
-        private readonly IMovieService _movieService;
+        private readonly IMovieAction _movieService;
 
-        public MovieController(IMovieService movieService)
+        public MovieController()
         {
-            _movieService = movieService;
+            _movieService = new BusinessLogic().MovieAction();
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMovies()
+        public IActionResult GetAllMovies()
         {
-            var movies = await _movieService.GetAllMoviesAsync();
+            var movies = _movieService.GetAllMovies();
             return Ok(movies);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetMovieById(int id)
+        public IActionResult GetMovieById(int id)
         {
-            var movie = await _movieService.GetMovieByIdAsync(id);
+            var movie = _movieService.GetMovieById(id);
             if (movie is null)
             {
                 return NotFound();
@@ -36,10 +37,11 @@ namespace Cadlix_backend.Api.Controller
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMovie(CreateMovieDTO createMovieDTO)
+        public IActionResult CreateMovie(CreateMovieDTO createMovieDTO)
         {
-            await _movieService.CreateMovieAsync(createMovieDTO);
-            return CreatedAtAction(nameof(GetMovieById), new { id = createMovieDTO.Id }, createMovieDTO);
+            var id = _movieService.CreateMovie(createMovieDTO);
+            createMovieDTO.Id = id;
+            return CreatedAtAction(nameof(GetMovieById), new { id }, createMovieDTO);
         }
     }
 }
