@@ -1,7 +1,7 @@
 using System;
 using Cadlix_backend.Domain.DTOs.Movie;
 
-namespace Cadlix_backend.BusinessLogic.Services;
+namespace Cadlix_backend.BusinessLayer.Services;
 
 public interface IMovieService
 {

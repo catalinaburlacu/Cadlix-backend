@@ -1,4 +1,4 @@
-namespace Cadlix_backend.BusinessLogic.Exceptions;
+namespace Cadlix_backend.BusinessLayer.Exceptions;
 
 public class NotFoundException : Exception
 {

@@ -1,9 +1,9 @@
 using Cadlix_backend.DataAccess.Repositories.Interfaces;
 using Cadlix_backend.Domain.DTOs;
-using Cadlix_backend.BusinessLogic.Exceptions;
+using Cadlix_backend.BusinessLayer.Exceptions;
 using User = Cadlix_backend.Domain.Entities.User.UserData;
 
-namespace Cadlix_backend.BusinessLogic.Services;
+namespace Cadlix_backend.BusinessLayer.Services;
 
 public class LeaderboardService
 {
