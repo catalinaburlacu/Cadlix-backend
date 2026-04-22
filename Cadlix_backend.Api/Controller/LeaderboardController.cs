@@ -24,7 +24,7 @@ namespace Cadlix_backend.Api.Controller
         }
 
         [HttpGet("{userId}")]
-        // [Authorize]
+         [Authorize]
         public IActionResult GetMyRank(int userId)
         {
             var result = _leaderboardService.GetUserRank(userId);

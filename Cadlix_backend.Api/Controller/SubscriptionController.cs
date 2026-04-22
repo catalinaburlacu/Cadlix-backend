@@ -19,17 +19,17 @@ namespace Cadlix_backend.Api.Controller
         }
 
         [HttpGet("active")]
-        // [Authorize]
+         [Authorize]
         public IActionResult GetActive(int userId)
         {
-            // if (!TryGetUserId(out var userId))
-            // {
-            //     return Unauthorized("User id claim is missing or invalid.");
-            // }
+             if (!TryGetUserId(out var validatedUserId))
+             {
+                 return Unauthorized("User id claim is missing or invalid.");
+             }
             SubscriptionDTO result;
             try
             {
-                result = _subscriptionService.GetActiveSubscription(userId);
+                result = _subscriptionService.GetActiveSubscription(validatedUserId);
             }
             catch
             {
@@ -39,18 +39,18 @@ namespace Cadlix_backend.Api.Controller
         }
 
         [HttpPost("create")]
-        // [Authorize]
+         [Authorize]
         public IActionResult Create(int userId, [FromBody] CreateSubscriptionDTO dto)
         {
-            // if (!TryGetUserId(out var userId))
-            // {
-            //     return Unauthorized("User id claim is missing or invalid.");
-            // }
+             if (!TryGetUserId(out var validatedUserId))
+             {
+                 return Unauthorized("User id claim is missing or invalid.");
+             }
 
             SubscriptionDTO result;
             try
             {
-                dto.UserId = userId;
+                dto.UserId = validatedUserId;
                 result = _subscriptionService.CreateSubscription(dto);
             }
             catch
@@ -61,16 +61,17 @@ namespace Cadlix_backend.Api.Controller
         }
 
         [HttpPost("cancel")]
-        // [Authorize]
+         [Authorize]
         public IActionResult Cancel(int userId)
         {
-            // if (!TryGetUserId(out var userId))
-            // {
-            //     return Unauthorized("User id claim is missing or invalid.");
-            // }
+             if (!TryGetUserId(out var validatedUserId))
+             {
+                 return Unauthorized("User id claim is missing or invalid.");
+             }
+            
             try
             {
-                _subscriptionService.CancelSubscription(userId);
+                _subscriptionService.CancelSubscription(validatedUserId);
             }
             catch
             {
@@ -79,10 +80,10 @@ namespace Cadlix_backend.Api.Controller
             return Ok("Subscription was cancelled successfully.");
         }
 
-        // private bool TryGetUserId(out int userId)
-        // {
-        //     userId = 1;
-        //     return true;
-        // }
+         private bool TryGetUserId(out int userId)
+        {
+             userId = 1;
+             return true;
+         }
     }
 }
