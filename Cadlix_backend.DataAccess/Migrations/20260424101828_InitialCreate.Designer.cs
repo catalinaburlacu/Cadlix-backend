@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cadlix_backend.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260402135128_InitialCreate")]
+    [Migration("20260424101828_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

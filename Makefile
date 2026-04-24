@@ -1,6 +1,6 @@
 -include .env
 
-# export ConnectionStrings__DefaultConnection := Server=localhost;Database=Cadlix;User Id=$(DB_USER);Password=$(DB_PASSWORD);TrustServerCertificate=True;
+export ConnectionStrings__DefaultConnection := Server=localhost;Database=Cadlix;User Id=$(DB_USER);Password=$(DB_PASSWORD);TrustServerCertificate=True;
 
 start:
 	@ docker compose up -d --build

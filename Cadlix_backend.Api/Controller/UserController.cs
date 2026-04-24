@@ -1,7 +1,9 @@
 using Cadlix_backend.BusinessLayer;
 using Cadlix_backend.BusinessLayer.Interfaces;
 using Cadlix_backend.Domain.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace Cadlix_backend.Api.Controller
 {
@@ -17,6 +19,7 @@ namespace Cadlix_backend.Api.Controller
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult GetAll()
         {
             var users = _userService.GetAllUsers();
@@ -24,6 +27,7 @@ namespace Cadlix_backend.Api.Controller
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public IActionResult GetById(int id)
         {
             try
@@ -41,7 +45,8 @@ namespace Cadlix_backend.Api.Controller
         public IActionResult Create([FromBody] CreateUserDTO dto)
         {
             var created = _userService.CreateUser(dto);
-            return Ok(created);
+            var token = new Utils().GenerateJWTToken(created);
+            return Ok(new { User = created, Token = token });
         }
 
         [HttpPut("{id}")]
@@ -71,5 +76,6 @@ namespace Cadlix_backend.Api.Controller
                 return NotFound();
             }
         }
+
     }
 }
