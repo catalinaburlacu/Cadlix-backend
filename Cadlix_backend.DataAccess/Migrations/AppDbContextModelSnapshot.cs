@@ -30,14 +30,122 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Items")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Title")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Action",
+                            Title = "Action"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Comedy",
+                            Title = "Comedy"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Drama",
+                            Title = "Drama"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Horror",
+                            Title = "Horror"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Romance",
+                            Title = "Romance"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Sci-Fi",
+                            Title = "Science Fiction"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Thriller",
+                            Title = "Thriller"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Animation",
+                            Title = "Animation"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Fantasy",
+                            Title = "Fantasy"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Adventure",
+                            Title = "Adventure"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Mystery",
+                            Title = "Mystery"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "Crime",
+                            Title = "Crime"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "Documentary",
+                            Title = "Documentary"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "Musical",
+                            Title = "Musical"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "Family",
+                            Title = "Family"
+                        });
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.History.HistoryData", b =>
@@ -48,6 +156,18 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Category")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Episode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ExternalMovieId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
 
@@ -56,8 +176,16 @@ namespace Cadlix_backend.DataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Progress")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<int>("ProgressPercentage")
                         .HasColumnType("int");
+
+                    b.Property<string>("Series")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -75,7 +203,11 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Histories");
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Histories", (string)null);
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.Leaderboard.LeaderboardData", b =>
@@ -85,6 +217,39 @@ namespace Cadlix_backend.DataAccess.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Avatar")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<double>("AverageRating")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("EpisodesWatched")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ExternalUserId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("HoursWatched")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LikesReceived")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MoviesWatched")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PreviousRank")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReviewsWritten")
+                        .HasColumnType("int");
 
                     b.Property<int>("Score")
                         .HasColumnType("int");
@@ -96,7 +261,7 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Leaderboards");
+                    b.ToTable("Leaderboards", (string)null);
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.ListsOfUserFilms.ListsData", b =>
@@ -110,10 +275,25 @@ namespace Cadlix_backend.DataAccess.Migrations
                     b.Property<DateTime>("AddedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Category")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Episode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ExternalFilmId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<int>("FilmId")
                         .HasColumnType("int");
 
                     b.Property<double>("FilmRating")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FilmScore")
                         .HasColumnType("float");
 
                     b.Property<string>("FilmStatus")
@@ -126,12 +306,28 @@ namespace Cadlix_backend.DataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Genre")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Poster")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lists");
+                    b.HasIndex("FilmId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Lists", (string)null);
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.Movie.MovieData", b =>
@@ -142,40 +338,96 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoryDataId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
+                    b.Property<string>("Backdrop")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Genre")
-                        .IsRequired()
+                    b.PrimitiveCollection<string>("Cast")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.PrimitiveCollection<string>("Country")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<double>("Rating")
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Director")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Duration")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("DurationSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Episode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Poster")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int?>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Rating")
                         .HasColumnType("float");
 
-                    b.Property<DateTime>("ReleaseDate")
-                        .HasColumnType("datetime2");
+                    b.Property<double?>("Score")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Series")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Thumbnail")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("TrendPercentage")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("VideoSource")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Views")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int?>("Year")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryDataId");
-
-                    b.ToTable("Movies");
+                    b.ToTable("Movies", (string)null);
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.Subscription.SubscriptionData", b =>
@@ -189,6 +441,10 @@ namespace Cadlix_backend.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Cta")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int>("DurationInMonths")
                         .HasColumnType("int");
 
@@ -196,23 +452,54 @@ namespace Cadlix_backend.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("HasAds")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsCanceled")
                         .HasColumnType("bit");
+
+                    b.Property<int>("MaxDevices")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("PlanId")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PriceLabel")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PriceValue")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Subtitle")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("SupportsOfflineDownload")
+                        .HasColumnType("bit");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<string>("VideoQuality")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Subscriptions");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.User.UserData", b =>
@@ -223,18 +510,45 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AddedToList")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Avatar")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Comments")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DaysOnSite")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<int>("HistoryId")
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Group")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("HoursWatched")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("JoinedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
-                    b.Property<int>("MovieListId")
+                    b.Property<int>("LikesGiven")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LikesReceived")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -247,21 +561,133 @@ namespace Cadlix_backend.DataAccess.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Plan")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<double?>("Rating")
+                        .HasColumnType("float");
+
+                    b.Property<int>("ReviewCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("TitlesWatched")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AddedToList = 0,
+                            Comments = 0,
+                            DaysOnSite = 0,
+                            Email = "admin@cadlix.com",
+                            Group = "Admin",
+                            HoursWatched = 0,
+                            Level = 1,
+                            LikesGiven = 0,
+                            LikesReceived = 0,
+                            Name = "Admin",
+                            Password = "JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=",
+                            Plan = "Premium",
+                            ReviewCount = 0,
+                            Status = "Active",
+                            TitlesWatched = 0
+                        });
                 });
 
-            modelBuilder.Entity("Cadlix_backend.Domain.Entities.Movie.MovieData", b =>
+            modelBuilder.Entity("CategoryDataMovieData", b =>
+                {
+                    b.Property<int>("GenresId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MoviesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GenresId", "MoviesId");
+
+                    b.HasIndex("MoviesId");
+
+                    b.ToTable("MovieGenres", (string)null);
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.History.HistoryData", b =>
+                {
+                    b.HasOne("Cadlix_backend.Domain.Entities.Movie.MovieData", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cadlix_backend.Domain.Entities.User.UserData", "User")
+                        .WithMany("Histories")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.ListsOfUserFilms.ListsData", b =>
+                {
+                    b.HasOne("Cadlix_backend.Domain.Entities.Movie.MovieData", "Film")
+                        .WithMany()
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cadlix_backend.Domain.Entities.User.UserData", "User")
+                        .WithMany("MovieLists")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Film");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.Subscription.SubscriptionData", b =>
+                {
+                    b.HasOne("Cadlix_backend.Domain.Entities.User.UserData", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CategoryDataMovieData", b =>
                 {
                     b.HasOne("Cadlix_backend.Domain.Entities.Categories.CategoryData", null)
-                        .WithMany("Movies")
-                        .HasForeignKey("CategoryDataId");
+                        .WithMany()
+                        .HasForeignKey("GenresId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cadlix_backend.Domain.Entities.Movie.MovieData", null)
+                        .WithMany()
+                        .HasForeignKey("MoviesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("Cadlix_backend.Domain.Entities.Categories.CategoryData", b =>
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.User.UserData", b =>
                 {
-                    b.Navigation("Movies");
+                    b.Navigation("Histories");
+
+                    b.Navigation("MovieLists");
                 });
 #pragma warning restore 612, 618
         }
