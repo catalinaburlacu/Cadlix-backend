@@ -6,7 +6,11 @@
 # dotenv files
 .env
 
+Cadlix_backend.Api/uploads
+
 appsettings*.json
+
+*.lscache
 
 # User-specific files
 *.rsuser
