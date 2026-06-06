@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
+using Cadlix_backend.Domain.Entities.User;
 
 namespace Cadlix_backend.Domain.Entities.Subscription;
 
@@ -21,6 +19,21 @@ public class SubscriptionData
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Subscription name must be between 3 and 50 characters long.")]
     public string? Name { get; set; }
 
+    [StringLength(20)]
+    public string? PlanId { get; set; }
+
+    [StringLength(100)]
+    public string? Subtitle { get; set; }
+
+    [StringLength(20)]
+    public string? PriceLabel { get; set; }
+
+    [StringLength(20)]
+    public string? PriceValue { get; set; }
+
+    [StringLength(100)]
+    public string? Cta { get; set; }
+
     [Required]
     [Display(Name = "Price")]
     [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
@@ -35,6 +48,15 @@ public class SubscriptionData
     [Display(Name = "Features")]
     public string? Features { get; set; }
 
+    public int MaxDevices { get; set; }
+
+    public bool HasAds { get; set; }
+
+    public bool SupportsOfflineDownload { get; set; }
+
+    [StringLength(20)]
+    public string? VideoQuality { get; set; }
+
     [Required]
     [Display(Name = "Created At")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -42,4 +64,7 @@ public class SubscriptionData
     [Required]
     [Display(Name = "Is Canceled")]
     public bool IsCanceled { get; set; }
+
+    [ForeignKey(nameof(UserId))]
+    public UserData? User { get; set; }
 }
