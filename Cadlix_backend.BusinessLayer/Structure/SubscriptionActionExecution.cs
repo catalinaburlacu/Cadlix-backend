@@ -1,6 +1,6 @@
 using System;
 using Cadlix_backend.BusinessLayer.Interfaces;
-using Cadlix_backend.BusinessLayer.Services;
+using Cadlix_backend.BusinessLayer.Core;
 using Cadlix_backend.Domain.DTOs;
 using Cadlix_backend.Domain.Enum;
 
@@ -8,32 +8,32 @@ namespace Cadlix_backend.BusinessLayer.Structure;
 
 public class SubscriptionActionExecution : SubscriptionActions, ISubscriptionAction
 {
-    public SubscriptionDTO GetActiveSubscription(int userId)
+    public SubscriptionDTO? GetActiveSubscription(int userId)
     {
-        return GetActiveSubscriptionAsync(userId).GetAwaiter().GetResult();
+        return GetActiveSubscription(userId);
     }
-    public SubscriptionDTO CreateSubscription(CreateSubscriptionDTO createDto)
+    public SubscriptionDTO? CreateSubscription(CreateSubscriptionDTO createDto)
     {
-        return CreateSubscriptionAsync(createDto).GetAwaiter().GetResult();
+        return CreateSubscription(createDto);
     }
-    public SubscriptionDTO UpgradePlan(int userId, SubscriptionPlan newPlan)
+    public SubscriptionDTO? UpgradePlan(int userId, SubscriptionPlan newPlan)
     {
-        return UpgradePlanAsync(userId, newPlan).GetAwaiter().GetResult();
+        return UpgradePlan(userId, newPlan);
     }
     public void CancelSubscription(int userId)
     {
-        CancelSubscriptionAsync(userId).GetAwaiter().GetResult();
+        CancelSubscription(userId);
     }
     public bool HasActiveSubscription(int userId)
     {
-        return HasActiveSubscriptionAsync(userId).GetAwaiter().GetResult();
+        return HasActiveSubscription(userId);
     }
     public bool CanAccessContent(int userId, SubscriptionPlan requiredPlan)
     {
-        return CanAccessContentAsync(userId, requiredPlan).GetAwaiter().GetResult();
+        return CanAccessContent(userId, requiredPlan);
     }
     public void RenewExpiredSubscriptions()
     {
-        RenewExpiredSubscriptionsAsync().GetAwaiter().GetResult();
+        RenewExpiredSubscriptions();
     }
 }
