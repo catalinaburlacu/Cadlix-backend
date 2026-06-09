@@ -1,7 +1,7 @@
-using System.Security.Claims;
 using Cadlix_backend.BusinessLayer.Interfaces;
 using Cadlix_backend.BusinessLayer;
 using Cadlix_backend.Domain.DTOs;
+using Cadlix_backend.Domain.DTOs.Frontend;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,15 +26,12 @@ namespace Cadlix_backend.Api.Controller
              {
                  return Unauthorized("User id claim is missing or invalid.");
              }
-            SubscriptionDTO result;
-            try
-            {
-                result = _subscriptionService.GetActiveSubscription(validatedUserId);
-            }
-            catch
+            var result = _subscriptionService.GetActiveSubscription(validatedUserId);
+            if (result is null)
             {
                 return NotFound();
             }
+
             return Ok(result);
         }
 
@@ -47,16 +44,13 @@ namespace Cadlix_backend.Api.Controller
                  return Unauthorized("User id claim is missing or invalid.");
              }
 
-            SubscriptionDTO result;
-            try
-            {
-                dto.UserId = validatedUserId;
-                result = _subscriptionService.CreateSubscription(dto);
-            }
-            catch
+            dto.UserId = validatedUserId;
+            var result = _subscriptionService.CreateSubscription(dto);
+            if (result is null)
             {
                 return NotFound();
             }
+
             return Ok(result);
         }
 
@@ -68,16 +62,14 @@ namespace Cadlix_backend.Api.Controller
              {
                  return Unauthorized("User id claim is missing or invalid.");
              }
-            
-            try
-            {
-                _subscriptionService.CancelSubscription(validatedUserId);
-            }
-            catch
-            {
+            var ok = _subscriptionService.CancelSubscription(validatedUserId);
+            if (!ok)
                 return NotFound();
-            }
-            return Ok("Subscription was cancelled successfully.");
+
+            return Ok(new MessageResponseDto
+            {
+                Message = "Subscription was cancelled successfully."
+            });
         }
 
          private bool TryGetUserId(out int userId)

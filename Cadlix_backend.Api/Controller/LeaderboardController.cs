@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Cadlix_backend.BusinessLayer.Interfaces;
 using Cadlix_backend.BusinessLayer;
+using Cadlix_backend.Domain.DTOs.Frontend;
 
 namespace Cadlix_backend.Api.Controller
 {
@@ -21,6 +22,13 @@ namespace Cadlix_backend.Api.Controller
         {
             var result = _leaderboardService.GetTopUsers(count);
             return Ok(result);
+        }
+
+        [HttpGet("page")]
+        public ActionResult<LeaderboardPayloadDto> GetPage([FromQuery] int count = 100)
+        {
+            var frontend = new BusinessLogic().Frontend();
+            return Ok(frontend.GetLeaderboardPage(count));
         }
 
         [HttpGet("{userId}")]

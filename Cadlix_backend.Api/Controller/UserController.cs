@@ -1,9 +1,11 @@
 using Cadlix_backend.BusinessLayer;
 using Cadlix_backend.BusinessLayer.Interfaces;
+using Cadlix_backend.BusinessLayer.Utilities;
 using Cadlix_backend.Domain.DTOs;
+using Cadlix_backend.Domain.DTOs.Frontend;
+using Cadlix_backend.Domain.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace Cadlix_backend.Api.Controller
 {
@@ -30,51 +32,59 @@ namespace Cadlix_backend.Api.Controller
         [Authorize]
         public IActionResult GetById(int id)
         {
-            try
-            {
-                var user = _userService.GetUserById(id);
-                return Ok(user);
-            }
-            catch
+            var user = _userService.GetUserById(id);
+            if (user is null)
             {
                 return NotFound();
             }
+            return Ok(user);
         }
 
         [HttpPost("create")]
         public IActionResult Create([FromBody] CreateUserDTO dto)
         {
-            var created = _userService.CreateUser(dto);
-            var token = new Utils().GenerateJWTToken(created);
-            return Ok(new { User = created, Token = token });
+            try
+            {
+                var created = _userService.CreateUser(dto);
+                if (created == null)
+                    return BadRequest(new { message = "Email already registered." });
+
+                var token = new JWT().GenerateJWTToken(created);
+                return Ok(new AuthResponseDto
+                {
+                    User = created,
+                    Token = token
+                });
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("already registered"))
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] UpdateUserDTO dto)
         {
-            try
-            {
-                var updated = _userService.UpdateUser(id, dto);
-                return Ok(updated);
-            }
-            catch
+            var updated = _userService.UpdateUser(id, dto);
+            if (updated is null)
             {
                 return NotFound();
             }
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            try
-            {
-                _userService.DeleteUser(id);
-                return Ok("User was deleted successfully.");
-            }
-            catch
-            {
+            var existing = _userService.GetUserById(id);
+            if (existing == null)
                 return NotFound();
-            }
+
+            _userService.DeleteUser(id);
+            return Ok(new MessageResponseDto
+            {
+                Message = "User was deleted successfully."
+            });
         }
 
     }
