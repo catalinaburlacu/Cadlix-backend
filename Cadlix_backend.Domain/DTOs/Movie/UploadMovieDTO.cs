@@ -12,9 +12,6 @@ public class UploadMovieDTO
     [StringLength(2000, ErrorMessage = "Description cannot exceed 2000 characters")]
     public string? Description { get; set; }
 
-    [Range(0, 10, ErrorMessage = "Rating must be between 0 and 10")]
-    public double? Rating { get; set; }
-
     [StringLength(50, ErrorMessage = "Category cannot exceed 50 characters")]
     public string? Category { get; set; }
 

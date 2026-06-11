@@ -38,7 +38,7 @@ public class MapProfile : Profile
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.FilmTitle))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.FilmStatus))
             .ForMember(dest => dest.DateAdded, opt => opt.MapFrom(src => src.AddedAt))
-            .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.FilmScore ?? src.FilmRating));
+            .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.FilmScore));
         CreateMap<HistoryData, WatchHistoryItemDto>()
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.MovieTitle));
     }

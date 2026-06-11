@@ -53,7 +53,7 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -207,7 +207,7 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Histories", (string)null);
+                    b.ToTable("Histories");
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.Leaderboard.LeaderboardData", b =>
@@ -327,7 +327,7 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Lists", (string)null);
+                    b.ToTable("Lists");
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.Movie.MovieData", b =>
@@ -387,9 +387,6 @@ namespace Cadlix_backend.DataAccess.Migrations
                     b.Property<int?>("Rank")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Rating")
-                        .HasColumnType("float");
-
                     b.Property<double?>("Score")
                         .HasColumnType("float");
 
@@ -418,6 +415,9 @@ namespace Cadlix_backend.DataAccess.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("VideoSources")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Views")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -427,7 +427,87 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Movies", (string)null);
+                    b.HasIndex("Description")
+                        .HasDatabaseName("IX_Movies_Description");
+
+                    b.HasIndex("Director")
+                        .HasDatabaseName("IX_Movies_Director");
+
+                    b.HasIndex("Title")
+                        .HasDatabaseName("IX_Movies_Title");
+
+                    b.ToTable("Movies");
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.Review.ReviewData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LikesCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("UserId", "MovieId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Reviews_UserId_MovieId");
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.Review.ReviewLikeData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReviewId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ReviewId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ReviewLikes_ReviewId_UserId");
+
+                    b.ToTable("ReviewLikes");
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.Subscription.SubscriptionData", b =>
@@ -471,6 +551,7 @@ namespace Cadlix_backend.DataAccess.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PriceLabel")
@@ -499,7 +580,44 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscriptions", (string)null);
+                    b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.User.RefreshTokenData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VideoQuality")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique()
+                        .HasDatabaseName("IX_RefreshTokens_Token");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.User.UserData", b =>
@@ -565,9 +683,6 @@ namespace Cadlix_backend.DataAccess.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<double?>("Rating")
-                        .HasColumnType("float");
-
                     b.Property<int>("ReviewCount")
                         .HasColumnType("int");
 
@@ -580,7 +695,7 @@ namespace Cadlix_backend.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
                     b.HasData(
                         new
@@ -602,6 +717,34 @@ namespace Cadlix_backend.DataAccess.Migrations
                             Status = "Active",
                             TitlesWatched = 0
                         });
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.User.UserLikeData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LikedUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LikerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LikedUserId");
+
+                    b.HasIndex("LikerId", "LikedUserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UserLikes_LikerId_LikedUserId");
+
+                    b.ToTable("UserLikes");
                 });
 
             modelBuilder.Entity("CategoryDataMovieData", b =>
@@ -657,6 +800,44 @@ namespace Cadlix_backend.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.Review.ReviewData", b =>
+                {
+                    b.HasOne("Cadlix_backend.Domain.Entities.Movie.MovieData", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cadlix_backend.Domain.Entities.User.UserData", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.Review.ReviewLikeData", b =>
+                {
+                    b.HasOne("Cadlix_backend.Domain.Entities.Review.ReviewData", "Review")
+                        .WithMany("ReviewLikes")
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cadlix_backend.Domain.Entities.User.UserData", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Review");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.Subscription.SubscriptionData", b =>
                 {
                     b.HasOne("Cadlix_backend.Domain.Entities.User.UserData", "User")
@@ -666,6 +847,36 @@ namespace Cadlix_backend.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.User.RefreshTokenData", b =>
+                {
+                    b.HasOne("Cadlix_backend.Domain.Entities.User.UserData", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.User.UserLikeData", b =>
+                {
+                    b.HasOne("Cadlix_backend.Domain.Entities.User.UserData", "LikedUser")
+                        .WithMany()
+                        .HasForeignKey("LikedUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cadlix_backend.Domain.Entities.User.UserData", "Liker")
+                        .WithMany()
+                        .HasForeignKey("LikerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LikedUser");
+
+                    b.Navigation("Liker");
                 });
 
             modelBuilder.Entity("CategoryDataMovieData", b =>
@@ -681,6 +892,11 @@ namespace Cadlix_backend.DataAccess.Migrations
                         .HasForeignKey("MoviesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Cadlix_backend.Domain.Entities.Review.ReviewData", b =>
+                {
+                    b.Navigation("ReviewLikes");
                 });
 
             modelBuilder.Entity("Cadlix_backend.Domain.Entities.User.UserData", b =>

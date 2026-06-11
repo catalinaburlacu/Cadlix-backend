@@ -37,9 +37,6 @@ public class UserData
 
     public int ReviewCount { get; set; }
 
-    [Range(0, 10)]
-    public double? Rating { get; set; }
-
     public int Comments { get; set; }
 
     public int LikesGiven { get; set; }

@@ -59,4 +59,14 @@ public class BusinessLogic
     {
         return new MovieActionExecution();
     }
+
+    public IReviewAction Review()
+    {
+        return new ReviewActions();
+    }
+
+    public ILikeAction Like()
+    {
+        return new LikeActions();
+    }
 }

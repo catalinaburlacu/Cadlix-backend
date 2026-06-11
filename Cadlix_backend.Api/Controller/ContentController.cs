@@ -33,9 +33,9 @@ public class ContentController : ControllerBase
     }
 
     [HttpGet("trending")]
-    public ActionResult<TrendingPayloadDto> GetTrending()
+    public ActionResult<TrendingPayloadDto> GetTrending([FromQuery] string? period, [FromQuery] string? filter)
     {
-        return Ok(_frontendService.GetTrending());
+        return Ok(_frontendService.GetTrending(period, filter));
     }
 
     [HttpGet("explore")]
@@ -56,6 +56,13 @@ public class ContentController : ControllerBase
     {
         var content = _contentService.GetContentByType(type).Select(EnrichMediaUrls);
         return Ok(content);
+    }
+
+    [HttpGet("series/{seriesName}/episodes")]
+    public IActionResult GetSeriesEpisodes(string seriesName)
+    {
+        var episodes = _contentService.GetSeriesEpisodes(seriesName).Select(EnrichMediaUrls);
+        return Ok(episodes);
     }
 
     [HttpGet("{id}")]
@@ -272,10 +279,7 @@ public class ContentController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> UploadMediaForContent(
         int id,
-        [FromForm] IFormFile? videoFile = null,
-        [FromForm] IFormFile? posterFile = null,
-        [FromForm] IFormFile? thumbnailFile = null,
-        [FromForm] IFormFile? backdropFile = null)
+        [FromForm] UploadContentMediaDto media)
     {
         var existing = _contentService.GetContentById(id);
         if (existing == null)
@@ -284,12 +288,12 @@ public class ContentController : ControllerBase
         var updateDto = new UpdateContentDTO();
         bool hasUpdates = false;
 
-        if (videoFile != null && videoFile.Length > 0)
+        if (media.VideoFile != null && media.VideoFile.Length > 0)
         {
             if (!string.IsNullOrEmpty(existing.VideoSource))
                 _fileUploadHandler.DeleteVideoFile(existing.VideoSource);
 
-            var (success, fileName, error) = await _fileUploadHandler.UploadVideoAsync(videoFile, id);
+            var (success, fileName, error) = await _fileUploadHandler.UploadVideoAsync(media.VideoFile, id);
             if (success)
             {
                 updateDto.VideoSource = fileName;
@@ -297,12 +301,12 @@ public class ContentController : ControllerBase
             }
         }
 
-        if (posterFile != null && posterFile.Length > 0)
+        if (media.PosterFile != null && media.PosterFile.Length > 0)
         {
             if (!string.IsNullOrEmpty(existing.Poster))
                 _fileUploadHandler.DeleteImageFile(existing.Poster, "poster");
 
-            var (success, fileName, error) = await _fileUploadHandler.UploadImageAsync(posterFile, id, "poster");
+            var (success, fileName, error) = await _fileUploadHandler.UploadImageAsync(media.PosterFile, id, "poster");
             if (success)
             {
                 updateDto.Poster = fileName;
@@ -310,12 +314,12 @@ public class ContentController : ControllerBase
             }
         }
 
-        if (thumbnailFile != null && thumbnailFile.Length > 0)
+        if (media.ThumbnailFile != null && media.ThumbnailFile.Length > 0)
         {
             if (!string.IsNullOrEmpty(existing.Thumbnail))
                 _fileUploadHandler.DeleteImageFile(existing.Thumbnail, "thumbnail");
 
-            var (success, fileName, error) = await _fileUploadHandler.UploadImageAsync(thumbnailFile, id, "thumbnail");
+            var (success, fileName, error) = await _fileUploadHandler.UploadImageAsync(media.ThumbnailFile, id, "thumbnail");
             if (success)
             {
                 updateDto.Thumbnail = fileName;
@@ -323,12 +327,12 @@ public class ContentController : ControllerBase
             }
         }
 
-        if (backdropFile != null && backdropFile.Length > 0)
+        if (media.BackdropFile != null && media.BackdropFile.Length > 0)
         {
             if (!string.IsNullOrEmpty(existing.Backdrop))
                 _fileUploadHandler.DeleteImageFile(existing.Backdrop, "backdrop");
 
-            var (success, fileName, error) = await _fileUploadHandler.UploadImageAsync(backdropFile, id, "backdrop");
+            var (success, fileName, error) = await _fileUploadHandler.UploadImageAsync(media.BackdropFile, id, "backdrop");
             if (success)
             {
                 updateDto.Backdrop = fileName;
@@ -349,35 +353,53 @@ public class ContentController : ControllerBase
 
     private ContentDTO EnrichMediaUrls(ContentDTO dto)
     {
-        if (dto == null) return dto;
-
         dto.Poster = ResolveImageUrl(dto.Poster, "poster", _fileUploadHandler.GetDefaultPoster());
         dto.Thumbnail = ResolveImageUrl(dto.Thumbnail, "thumbnail", _fileUploadHandler.GetDefaultThumbnail());
         dto.Backdrop = ResolveImageUrl(dto.Backdrop, "backdrop", _fileUploadHandler.GetDefaultBackdrop());
         dto.VideoSource = ResolveVideoUrl(dto.VideoSource);
+
+        if (dto.VideoSources != null && dto.VideoSources.Count > 0)
+        {
+            dto.VideoSources = dto.VideoSources
+                .ToDictionary(kv => kv.Key, kv => ResolveVideoUrl(kv.Value));
+        }
+        else
+        {
+            var resolved = dto.VideoSource;
+            dto.VideoSources = string.IsNullOrEmpty(resolved)
+                ? null
+                : new Dictionary<string, string>
+                {
+                    ["Auto"] = resolved,
+                    ["1080p"] = resolved,
+                    ["720p"] = resolved,
+                    ["480p"] = resolved,
+                    ["360p"] = resolved,
+                };
+        }
 
         return dto;
     }
 
     private string ResolveImageUrl(string? value, string type, string defaultPath)
     {
-        if (string.IsNullOrEmpty(value) || !_fileUploadHandler.ImageFileExists(value, type))
-        {
+        if (string.IsNullOrEmpty(value))
             return $"/api/media/image/{defaultPath}";
-        }
         if (value.StartsWith("http://") || value.StartsWith("https://"))
             return value;
+        if (!_fileUploadHandler.ImageFileExists(value, type))
+            return $"/api/media/image/{defaultPath}";
         return $"/api/media/image/{type}s/{value}";
     }
 
     private string ResolveVideoUrl(string? value)
     {
-        if (string.IsNullOrEmpty(value) || !_fileUploadHandler.VideoFileExists(value))
-        {
+        if (string.IsNullOrEmpty(value))
             return string.Empty;
-        }
         if (value.StartsWith("http://") || value.StartsWith("https://"))
-            return value;
+            return $"/api/media/video/proxy?url={Uri.EscapeDataString(value)}";
+        if (!_fileUploadHandler.VideoFileExists(value))
+            return string.Empty;
         return $"/api/media/video/{value}";
     }
 }

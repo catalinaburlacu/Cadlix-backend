@@ -13,8 +13,9 @@ public class ExploreMovieDto
     public string Id { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public int Year { get; set; }
-    public double? Rating { get; set; }
+    public double? Score { get; set; }
     public string Type { get; set; } = string.Empty;
+    public string Genre { get; set; } = string.Empty;
     public string Poster { get; set; } = string.Empty;
 }
 
@@ -23,6 +24,7 @@ public class CarouselItemDto
     public string Id { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string Meta { get; set; } = string.Empty;
+    public string Poster { get; set; } = string.Empty;
 }
 
 public class CarouselRowDto

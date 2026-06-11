@@ -1,9 +1,11 @@
 using Cadlix_backend.BusinessLayer;
 using Cadlix_backend.BusinessLayer.Interfaces;
 using Cadlix_backend.BusinessLayer.Utilities;
+using Cadlix_backend.DataAccess.Context;
 using Cadlix_backend.Domain.DTOs;
 using Cadlix_backend.Domain.DTOs.Frontend;
 using Cadlix_backend.Domain.DTOs.User;
+using Cadlix_backend.Domain.Entities.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cadlix_backend.Api.Controller
@@ -35,13 +37,15 @@ namespace Cadlix_backend.Api.Controller
 
             var jwt = new JWT();
             var token = jwt.GenerateJWTToken(user);
-            var refreshToken = jwt.GenerateRefreshToken(user.Id);
+            var refreshToken = jwt.GenerateRefreshToken();
+
+            StoreRefreshToken(user.Id, refreshToken, jwt.GetRefreshTokenExpiresAt());
+            SetRefreshTokenCookie(refreshToken, jwt.GetRefreshTokenExpiresAt());
 
             return Ok(new AuthResponseDto
             {
                 User = user,
                 Token = token,
-                RefreshToken = refreshToken,
                 ExpiresAt = jwt.GetAccessTokenExpiresAt(),
             });
         }
@@ -62,41 +66,90 @@ namespace Cadlix_backend.Api.Controller
 
             var jwt = new JWT();
             var token = jwt.GenerateJWTToken(created);
-            var refreshToken = jwt.GenerateRefreshToken(created.Id);
+            var refreshToken = jwt.GenerateRefreshToken();
+
+            StoreRefreshToken(created.Id, refreshToken, jwt.GetRefreshTokenExpiresAt());
+            SetRefreshTokenCookie(refreshToken, jwt.GetRefreshTokenExpiresAt());
 
             return Ok(new AuthResponseDto
             {
                 User = created,
                 Token = token,
-                RefreshToken = refreshToken,
                 ExpiresAt = jwt.GetAccessTokenExpiresAt(),
             });
         }
 
         [HttpPost("refresh")]
-        public IActionResult Refresh([FromBody] RefreshDTO dto)
+        public IActionResult Refresh()
         {
-            if (string.IsNullOrWhiteSpace(dto.RefreshToken))
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrWhiteSpace(refreshToken))
                 return BadRequest("Refresh token is required.");
 
-            var jwt = new JWT();
-            var userId = jwt.ValidateRefreshToken(dto.RefreshToken);
-            if (userId == null)
+            using var db = new AppDbContext();
+            var storedToken = db.RefreshTokens
+                .FirstOrDefault(rt => rt.Token == refreshToken);
+
+            if (storedToken == null)
                 return Unauthorized("Invalid or expired refresh token.");
 
-            var user = _userService.GetUserById(userId.Value);
+            if (storedToken.ExpiresAt < DateTime.UtcNow)
+            {
+                db.RefreshTokens.Remove(storedToken);
+                db.SaveChanges();
+                return Unauthorized("Refresh token has expired.");
+            }
+
+            var user = _userService.GetUserById(storedToken.UserId);
             if (user == null)
                 return Unauthorized("User no longer exists.");
 
+            var jwt = new JWT();
             var newToken = jwt.GenerateJWTToken(user);
-            var newRefreshToken = jwt.GenerateRefreshToken(user.Id);
+            var newRefreshToken = jwt.GenerateRefreshToken();
+
+            db.RefreshTokens.Remove(storedToken);
+            db.RefreshTokens.Add(new RefreshTokenData
+            {
+                UserId = user.Id,
+                Token = newRefreshToken,
+                ExpiresAt = jwt.GetRefreshTokenExpiresAt(),
+                CreatedAt = DateTime.UtcNow,
+            });
+            db.SaveChanges();
+
+            SetRefreshTokenCookie(newRefreshToken, jwt.GetRefreshTokenExpiresAt());
 
             return Ok(new AuthResponseDto
             {
                 User = user,
                 Token = newToken,
-                RefreshToken = newRefreshToken,
                 ExpiresAt = jwt.GetAccessTokenExpiresAt(),
+            });
+        }
+
+        private void StoreRefreshToken(int userId, string token, DateTime expiresAt)
+        {
+            using var db = new AppDbContext();
+            db.RefreshTokens.Add(new RefreshTokenData
+            {
+                UserId = userId,
+                Token = token,
+                ExpiresAt = expiresAt,
+                CreatedAt = DateTime.UtcNow,
+            });
+            db.SaveChanges();
+        }
+
+        private void SetRefreshTokenCookie(string token, DateTime expiresAt)
+        {
+            Response.Cookies.Append("refreshToken", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                Expires = expiresAt,
+                Path = "/api/Login/refresh",
             });
         }
     }

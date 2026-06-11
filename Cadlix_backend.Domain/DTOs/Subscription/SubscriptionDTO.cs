@@ -1,4 +1,3 @@
-using System;
 using Cadlix_backend.Domain.Enum;
 
 namespace Cadlix_backend.Domain.DTOs;

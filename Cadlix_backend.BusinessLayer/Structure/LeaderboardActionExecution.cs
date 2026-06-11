@@ -7,16 +7,16 @@ namespace Cadlix_backend.BusinessLayer.Structure;
 
 public class LeaderboardActionExecution: LeaderboardActions, ILeaderboardAction
 {
-    public IEnumerable<LeaderboardEntryDto> GetTopUsers(int count = 100)
+    public new IEnumerable<LeaderboardEntryDto> GetTopUsers(int count = 100)
     {
-        return GetTopUsers(count);
+        return base.GetTopUsers(count);
     }
-    public LeaderboardEntryDto? GetUserRank(int userId)
+    public new LeaderboardEntryDto? GetUserRank(int userId)
     {
-        return GetUserRank(userId);
+        return base.GetUserRank(userId);
     }
-    public double CalculateScore(int userId)
+    public new double CalculateScore(int userId)
     {
-        return CalculateScore(userId);
+        return base.CalculateScore(userId);
     }
 }

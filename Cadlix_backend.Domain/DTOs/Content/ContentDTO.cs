@@ -15,7 +15,6 @@ public class ContentDTO
     public string? Director { get; set; }
     public List<string>? Cast { get; set; }
     public string? Duration { get; set; }
-    public double? Rating { get; set; }
     public double? Score { get; set; }
     public int? Rank { get; set; }
     public string? TrendPercentage { get; set; }
@@ -28,5 +27,6 @@ public class ContentDTO
     public string? Thumbnail { get; set; }
     public string? Backdrop { get; set; }
     public string? VideoSource { get; set; }
+    public Dictionary<string, string>? VideoSources { get; set; }
     public bool IsPrivate { get; set; }
 }

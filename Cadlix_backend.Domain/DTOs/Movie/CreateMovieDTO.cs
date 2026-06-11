@@ -9,7 +9,6 @@ public class CreateMovieDTO
     public List<string>? Genres { get; set; }
     public List<string>? Country { get; set; }
     public int? Year { get; set; }
-    public double Rating { get; set; }
     public string? Description { get; set; }
     public string? VideoSource { get; set; }
 

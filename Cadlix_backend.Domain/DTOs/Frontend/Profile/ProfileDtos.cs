@@ -2,7 +2,7 @@ namespace Cadlix_backend.Domain.DTOs.Frontend;
 
 public class UserStatsDto
 {
-    public double Rating { get; set; }
+    public double Score { get; set; }
     public int TitlesWatched { get; set; }
     public int Comments { get; set; }
     public int LikesGiven { get; set; }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Cadlix_backend.Api.Controller
@@ -10,6 +11,8 @@ namespace Cadlix_backend.Api.Controller
     [ApiController]
     public class StreamingController : ControllerBase
     {
+        private static readonly HttpClient _httpClient = new(new HttpClientHandler { AllowAutoRedirect = true });
+
         private readonly ILogger<StreamingController> _logger;
         private readonly string _videoStoragePath;
         private readonly string _posterPath;
@@ -101,10 +104,10 @@ namespace Cadlix_backend.Api.Controller
                         "thumbnails" => _thumbnailPath,
                         "backdrops" => _backdropPath,
                         "defaults" => _defaultPath,
-                        _ => null
+                        _ => string.Empty
                     };
 
-                    if (directory == null)
+                    if (string.IsNullOrEmpty(directory))
                         return BadRequest("Invalid image type");
                 }
 
@@ -136,6 +139,62 @@ namespace Cadlix_backend.Api.Controller
         public async Task<IActionResult> StreamVideoLegacy(string fileName)
         {
             return await StreamVideo(fileName);
+        }
+
+        /// <summary>
+        /// Proxy external video URL through the backend to avoid CORS/hotlink restrictions
+        /// </summary>
+        [HttpGet("video/proxy")]
+        [AllowAnonymous]
+        public async Task ProxyVideo([FromQuery] string url)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(url) || !url.StartsWith("https://"))
+                {
+                    Response.StatusCode = 400;
+                    await Response.WriteAsync("Invalid URL");
+                    return;
+                }
+
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+
+                var rangeHeader = Request.Headers["Range"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(rangeHeader))
+                    request.Headers.TryAddWithoutValidation("Range", rangeHeader);
+
+                using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+                if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.PartialContent)
+                {
+                    Response.StatusCode = (int)response.StatusCode;
+                    await Response.WriteAsync("Error proxying video");
+                    return;
+                }
+
+                Response.StatusCode = (int)response.StatusCode;
+                Response.ContentType = response.Content.Headers.ContentType?.ToString() ?? "video/mp4";
+                Response.Headers["Accept-Ranges"] = "bytes";
+
+                if (response.Content.Headers.ContentLength.HasValue)
+                    Response.Headers["Content-Length"] = response.Content.Headers.ContentLength.Value.ToString();
+
+                var contentRange = response.Content.Headers.ContentRange?.ToString();
+                if (!string.IsNullOrEmpty(contentRange))
+                    Response.Headers["Content-Range"] = contentRange;
+
+                await response.Content.CopyToAsync(Response.Body);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error proxying video: {ex.Message}");
+                if (!Response.HasStarted)
+                {
+                    Response.StatusCode = 500;
+                    await Response.WriteAsync("Error proxying video");
+                }
+            }
         }
 
         /// <summary>
@@ -186,49 +245,8 @@ namespace Cadlix_backend.Api.Controller
 
         private async Task<IActionResult> StreamFileWithRange(string filePath, string contentType)
         {
-            var fileInfo = new FileInfo(filePath);
-
-            if (Request.Headers.Range.Count > 0)
-            {
-                var rangeHeader = Request.Headers.Range.ToString();
-                if (rangeHeader.StartsWith("bytes="))
-                {
-                    var rangeValue = rangeHeader.Substring("bytes=".Length);
-                    var parts = rangeValue.Split('-');
-
-                    if (long.TryParse(parts[0], out long start))
-                    {
-                        long end = fileInfo.Length - 1;
-
-                        if (parts.Length > 1 && long.TryParse(parts[1], out long endRange))
-                        {
-                            end = Math.Min(endRange, end);
-                        }
-
-                        var length = end - start + 1;
-
-                        if (start >= 0 && end < fileInfo.Length && start <= end)
-                        {
-                            Response.StatusCode = StatusCodes.Status206PartialContent;
-                            Response.Headers["Content-Range"] = $"bytes {start}-{end}/{fileInfo.Length}";
-                            Response.Headers["Accept-Ranges"] = "bytes";
-                            Response.Headers["Content-Length"] = length.ToString();
-
-                            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                            fileStream.Seek(start, SeekOrigin.Begin);
-
-                            return File(fileStream, contentType, fileDownloadName: null, enableRangeProcessing: true);
-                        }
-                    }
-                }
-            }
-
-            Response.Headers["Accept-Ranges"] = "bytes";
-            Response.Headers["Content-Length"] = fileInfo.Length.ToString();
-            Response.ContentType = contentType;
-
-            var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            return File(stream, contentType, enableRangeProcessing: true);
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            return File(fileStream, contentType, enableRangeProcessing: true);
         }
 
         private string GetVideoContentType(string fileName)

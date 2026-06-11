@@ -37,10 +37,35 @@ public partial class FrontendActions
             {
                 dto.Poster = MediaUrl.Poster(movie.Poster) is { Length: >0 } p ? p : MediaUrl.Thumbnail(movie.Thumbnail);
                 dto.Type = movie.Type ?? movie.Category ?? string.Empty;
-                dto.Score = movie.Score ?? movie.Rating;
+                dto.Score = movie.Score;
             }
             return dto;
         }).ToList();
+
+        var reviewCount = _context.Reviews.Count(r => r.UserId == userId);
+        var actualTitlesWatched = historyEntities
+            .Where(h => h.Movie != null)
+            .Select(h => string.IsNullOrEmpty(h.Movie!.Series)
+                ? $"movie:{h.MovieId}"
+                : $"series:{h.Movie.Series}")
+            .Distinct()
+            .Count();
+        var actualDaysOnSite = user.JoinedAt.HasValue
+            ? (int)(DateTime.UtcNow - user.JoinedAt.Value).TotalDays
+            : 0;
+
+        // Score: match leaderboard formula exactly
+        var scoreWatchHours = (historyEntities.Sum(h => (double?)h.ProgressPercentage) ?? 0) / 100.0;
+        var scoreMoviesCount = _context.Histories
+            .Count(h => h.UserId == userId && h.ProgressPercentage > 0);
+        var scoreReviewCount = _context.Histories
+            .Count(h => h.UserId == userId && h.UserRating.HasValue);
+        var scoreLikesCount = user.LikesReceived;
+        var computedScore = Math.Round(
+            scoreWatchHours * 1.0 +
+            scoreMoviesCount * 5.0 +
+            scoreReviewCount * 2.0 +
+            scoreLikesCount * 0.5, 3);
 
         return new UserProfileDto
         {
@@ -54,14 +79,14 @@ public partial class FrontendActions
             Status = user.Status ?? "Online",
             Stats = new UserStatsDto
             {
-                Rating = user.Rating ?? 0,
-                TitlesWatched = user.TitlesWatched,
+                Score = computedScore,
+                TitlesWatched = actualTitlesWatched,
                 Comments = user.Comments,
                 LikesGiven = user.LikesGiven,
                 LikesReceived = user.LikesReceived,
-                HoursWatched = user.HoursWatched,
-                AddedToList = user.AddedToList,
-                DaysOnSite = user.DaysOnSite
+                HoursWatched = (int)scoreWatchHours,
+                AddedToList = watchListEntities.Count,
+                DaysOnSite = actualDaysOnSite
             },
             WatchList = watchList,
             WatchHistory = _mapper.Map<List<WatchHistoryItemDto>>(historyEntities)

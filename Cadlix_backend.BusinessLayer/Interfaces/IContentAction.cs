@@ -12,4 +12,5 @@ public interface IContentAction
     ContentDTO? UpdateContent(int id, UpdateContentDTO dto);
     bool DeleteContent(int id);
     IEnumerable<ContentDTO> SearchContent(string query);
+    IEnumerable<ContentDTO> GetSeriesEpisodes(string seriesName);
 }

@@ -56,29 +56,28 @@ namespace Cadlix_backend.Api.Controller
         [HttpPost("upload")]
         [Authorize]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadMovie([FromForm] UploadMovieDTO uploadMovieDTO, [FromForm] IFormFile videoFile)
+        public async Task<IActionResult> UploadMovie([FromForm] UploadMovieFormDto form)
         {
             try
             {
-                if (uploadMovieDTO == null)
+                if (form == null)
                     return BadRequest("Movie data is required");
 
-                if (videoFile == null || videoFile.Length == 0)
+                if (form.VideoFile == null || form.VideoFile.Length == 0)
                     return BadRequest("Video file is required");
 
                 var createMovieDTO = new CreateMovieDTO
                 {
-                    Title = uploadMovieDTO.Title,
-                    Description = uploadMovieDTO.Description,
-                    Rating = uploadMovieDTO.Rating ?? 0,
-                    Genres = uploadMovieDTO.Genres,
-                    Country = uploadMovieDTO.Country,
-                    Year = uploadMovieDTO.Year
+                    Title = form.Title,
+                    Description = form.Description,
+                    Genres = form.Genres,
+                    Country = form.Country,
+                    Year = form.Year
                 };
 
                 var movieId = _movieService.CreateMovie(createMovieDTO);
 
-                var (uploadSuccess, fileName, errorMessage) = await _fileUploadHandler.UploadVideoAsync(videoFile, movieId);
+                var (uploadSuccess, fileName, errorMessage) = await _fileUploadHandler.UploadVideoAsync(form.VideoFile, movieId);
 
                 if (!uploadSuccess)
                 {
@@ -94,13 +93,13 @@ namespace Cadlix_backend.Api.Controller
                 var updateDto = new Cadlix_backend.Domain.DTOs.Content.UpdateContentDTO
                 {
                     VideoSource = fileName,
-                    Description = uploadMovieDTO.Description,
-                    Director = uploadMovieDTO.Director,
-                    Cast = uploadMovieDTO.Cast,
-                    Country = uploadMovieDTO.Country,
-                    Category = uploadMovieDTO.Category,
-                    Duration = uploadMovieDTO.Duration,
-                    DurationSeconds = uploadMovieDTO.DurationSeconds,
+                    Description = form.Description,
+                    Director = form.Director,
+                    Cast = form.Cast,
+                    Country = form.Country,
+                    Category = form.Category,
+                    Duration = form.Duration,
+                    DurationSeconds = form.DurationSeconds,
                 };
 
                 var contentService = new BusinessLogic().Content();
@@ -109,7 +108,7 @@ namespace Cadlix_backend.Api.Controller
                 return Ok(new MovieUploadResponseDTO
                 {
                     MovieId = movieId,
-                    Title = uploadMovieDTO.Title,
+                    Title = form.Title,
                     VideoFileName = fileName,
                     Success = true,
                     Message = "Movie uploaded successfully"

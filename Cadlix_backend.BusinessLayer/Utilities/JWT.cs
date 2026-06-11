@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using Cadlix_backend.Domain.DTOs;
 using Cadlix_backend.Domain.DTOs.Frontend;
@@ -12,9 +11,8 @@ namespace Cadlix_backend.BusinessLayer.Utilities;
 
 public class JWT
 {
-    private static readonly ConcurrentDictionary<string, RefreshTokenEntry> _refreshTokens = new();
-    private static readonly TimeSpan AccessTokenExpiry = TimeSpan.FromMinutes(30);
-    private static readonly TimeSpan RefreshTokenExpiry = TimeSpan.FromDays(7);
+    private static readonly TimeSpan AccessTokenExpiry = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan RefreshTokenExpiry = TimeSpan.FromDays(30);
 
     public string GenerateJWTToken(UserDTO user)
     {
@@ -40,46 +38,15 @@ public class JWT
         return new JwtSecurityTokenHandler().WriteToken(jwtToken);
     }
 
-    public string GenerateRefreshToken(int userId)
+    public string GenerateRefreshToken()
     {
         var tokenBytes = new byte[64];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(tokenBytes);
-        var token = Convert.ToBase64String(tokenBytes);
-
-        _refreshTokens[token] = new RefreshTokenEntry
-        {
-            UserId = userId,
-            ExpiresAt = DateTime.UtcNow.Add(RefreshTokenExpiry),
-        };
-
-        return token;
+        return Convert.ToBase64String(tokenBytes);
     }
 
-    public int? ValidateRefreshToken(string refreshToken)
-    {
-        if (string.IsNullOrEmpty(refreshToken))
-            return null;
-
-        if (!_refreshTokens.TryGetValue(refreshToken, out var entry))
-            return null;
-
-        if (entry.ExpiresAt < DateTime.UtcNow)
-        {
-            _refreshTokens.TryRemove(refreshToken, out _);
-            return null;
-        }
-
-        _refreshTokens.TryRemove(refreshToken, out _);
-
-        return entry.UserId;
-    }
+    public DateTime GetRefreshTokenExpiresAt() => DateTime.UtcNow.Add(RefreshTokenExpiry);
 
     public DateTime GetAccessTokenExpiresAt() => DateTime.UtcNow.Add(AccessTokenExpiry);
-
-    private class RefreshTokenEntry
-    {
-        public int UserId { get; set; }
-        public DateTime ExpiresAt { get; set; }
-    }
 }

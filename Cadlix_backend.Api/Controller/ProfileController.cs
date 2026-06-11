@@ -10,10 +10,13 @@ namespace Cadlix_backend.Api.Controller;
 public class ProfileController : ControllerBase
 {
     private readonly IFrontendAction _frontendService;
+    private readonly ILikeAction _likeService;
 
     public ProfileController()
     {
-        _frontendService = new BusinessLogic().Frontend();
+        var logic = new BusinessLogic();
+        _frontendService = logic.Frontend();
+        _likeService = logic.Like();
     }
 
     [HttpGet("{userId}")]
@@ -24,5 +27,31 @@ public class ProfileController : ControllerBase
             return NotFound();
 
         return Ok(profile);
+    }
+
+    [HttpPost("{userId}/like")]
+    public ActionResult<LikeStatusDto> ToggleLike(int userId)
+    {
+        var likerId = GetCurrentUserId();
+        if (likerId == null)
+            return Unauthorized();
+
+        return Ok(_likeService.ToggleLike(likerId.Value, userId));
+    }
+
+    [HttpGet("{userId}/like")]
+    public ActionResult<LikeStatusDto> GetLikeStatus(int userId)
+    {
+        var likerId = GetCurrentUserId();
+        return Ok(_likeService.GetLikeStatus(userId, likerId));
+    }
+
+    private int? GetCurrentUserId()
+    {
+        var claim = User.FindFirst("userId")?.Value
+                    ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (int.TryParse(claim, out var id))
+            return id;
+        return null;
     }
 }

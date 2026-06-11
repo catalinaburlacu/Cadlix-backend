@@ -8,32 +8,32 @@ namespace Cadlix_backend.BusinessLayer.Structure;
 
 public class SubscriptionActionExecution : SubscriptionActions, ISubscriptionAction
 {
-    public SubscriptionDTO? GetActiveSubscription(int userId)
+    public new SubscriptionDTO? GetActiveSubscription(int userId)
     {
-        return GetActiveSubscription(userId);
+        return base.GetActiveSubscription(userId);
     }
-    public SubscriptionDTO? CreateSubscription(CreateSubscriptionDTO createDto)
+    public new SubscriptionDTO? CreateSubscription(CreateSubscriptionDTO createDto)
     {
-        return CreateSubscription(createDto);
+        return base.CreateSubscription(createDto);
     }
-    public SubscriptionDTO? UpgradePlan(int userId, SubscriptionPlan newPlan)
+    public new SubscriptionDTO? UpgradePlan(int userId, SubscriptionPlan newPlan)
     {
-        return UpgradePlan(userId, newPlan);
+        return base.UpgradePlan(userId, newPlan);
     }
-    public void CancelSubscription(int userId)
+    public new void CancelSubscription(int userId)
     {
-        CancelSubscription(userId);
+        base.CancelSubscription(userId);
     }
-    public bool HasActiveSubscription(int userId)
+    public new bool HasActiveSubscription(int userId)
     {
-        return HasActiveSubscription(userId);
+        return base.HasActiveSubscription(userId);
     }
-    public bool CanAccessContent(int userId, SubscriptionPlan requiredPlan)
+    public new bool CanAccessContent(int userId, SubscriptionPlan requiredPlan)
     {
-        return CanAccessContent(userId, requiredPlan);
+        return base.CanAccessContent(userId, requiredPlan);
     }
-    public void RenewExpiredSubscriptions()
+    public new void RenewExpiredSubscriptions()
     {
-        RenewExpiredSubscriptions();
+        base.RenewExpiredSubscriptions();
     }
 }

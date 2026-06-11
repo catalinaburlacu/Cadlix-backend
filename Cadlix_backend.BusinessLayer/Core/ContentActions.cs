@@ -52,13 +52,13 @@ public class ContentActions : IContentAction
             Title = dto.Title,
             Type = dto.Type,
             Year = dto.Year,
-            Score = dto.Score,
+            Score = (int?)dto.Score,
         };
 
         if (dto.Genres != null && dto.Genres.Count > 0)
         {
             var existing = _context.Categories
-                .Where(c => dto.Genres.Contains(c.Name))
+                .Where(c => c.Name != null && dto.Genres != null && dto.Genres.Contains(c.Name))
                 .ToList();
 
             var newNames = dto.Genres
@@ -88,7 +88,7 @@ public class ContentActions : IContentAction
         if (dto.Genres != null)
         {
             var existing = _context.Categories
-                .Where(c => dto.Genres.Contains(c.Name))
+                .Where(c => c.Name != null && dto.Genres != null && dto.Genres.Contains(c.Name))
                 .ToList();
 
             var newNames = dto.Genres
@@ -118,14 +118,33 @@ public class ContentActions : IContentAction
     public IEnumerable<ContentDTO> SearchContent(string query)
     {
         var lowerQuery = query.ToLower();
+
         var movies = _context.Movies
             .Include(m => m.Genres)
-            .Where(m => !m.IsPrivate && (
-                        (m.Title != null && m.Title.ToLower().Contains(lowerQuery)) ||
-                        (m.Genres != null && m.Genres.Any(g => g.Name.ToLower().Contains(lowerQuery))) ||
-                        (m.Country != null && m.Country.Any(c => c.ToLower().Contains(lowerQuery))) ||
-                        (m.Director != null && m.Director.ToLower().Contains(lowerQuery)) ||
-                        (m.Cast != null && m.Cast.Any(c => c.ToLower().Contains(lowerQuery)))))
+            .Where(m => !m.IsPrivate)
+            .ToList();
+
+        movies = movies
+            .Where(m =>
+                (m.Title != null && m.Title.ToLower().Contains(lowerQuery)) ||
+                (m.Description != null && m.Description.ToLower().Contains(lowerQuery)) ||
+                (m.Director != null && m.Director.ToLower().Contains(lowerQuery)) ||
+                (m.Genres != null && m.Genres.Any(g => g.Name != null && g.Name.ToLower().Contains(lowerQuery))) ||
+                (m.Country != null && m.Country.Any(c => c != null && c.ToLower().Contains(lowerQuery))) ||
+                (m.Cast != null && m.Cast.Any(c => c != null && c.ToLower().Contains(lowerQuery))))
+            .OrderBy(m => m.Title)
+            .Take(20)
+            .ToList();
+
+        return _mapper.Map<List<ContentDTO>>(movies);
+    }
+
+    public IEnumerable<ContentDTO> GetSeriesEpisodes(string seriesName)
+    {
+        var movies = _context.Movies
+            .Include(m => m.Genres)
+            .Where(m => m.Series != null && m.Series == seriesName && !m.IsPrivate)
+            .OrderBy(m => m.Episode)
             .ToList();
         return _mapper.Map<List<ContentDTO>>(movies);
     }

@@ -27,7 +27,6 @@ public class MovieAction
             Genres = movie.Genres?.Select(g => g.Name ?? string.Empty).ToList(),
             Country = movie.Country,
             Year = movie.Year,
-            Rating = movie.Rating,
             Description = movie.Description
         }).ToList();
     }
@@ -50,7 +49,7 @@ public class MovieAction
     public int CreateMovieExecution(CreateMovieDTO createMovieDTO)
     {
         var genreList = _context.Categories
-            .Where(c => createMovieDTO.Genres.Contains(c.Name))
+            .Where(c => c.Name != null && createMovieDTO.Genres != null && createMovieDTO.Genres.Contains(c.Name))
             .ToList();
 
         var movie = new MovieData
@@ -59,7 +58,6 @@ public class MovieAction
             Genres = genreList.Any() ? genreList : new List<CategoryData>(),
             Country = createMovieDTO.Country,
             Year = createMovieDTO.Year,
-            Rating = createMovieDTO.Rating,
             Description = createMovieDTO.Description,
             VideoSource = createMovieDTO.VideoSource
         };

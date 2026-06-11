@@ -32,9 +32,6 @@ public class UpdateContentDTO
     public string? Duration { get; set; }
 
     [Range(0, 10)]
-    public double? Rating { get; set; }
-
-    [Range(0, 10)]
     public double? Score { get; set; }
 
     public int? Rank { get; set; }
